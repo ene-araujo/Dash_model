@@ -1,6 +1,3 @@
-Perfeito! Segue a versão final do seu `README.md`, pronta para salvar no GitHub:
-
-````markdown
 # Painel de Previsão de Vendas
 
 Um projeto interativo desenvolvido com **Dash (Python)** para prever vendas e comparar os resultados com metas definidas.  
@@ -122,3 +119,5 @@ O painel estará disponível em:
 
 **Última atualização:** Outubro de 2025
 **Autor:** Ananias Araujo — Projeto desenvolvido para portfólio público.
+
+  
