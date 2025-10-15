@@ -25,5 +25,5 @@ def display_page(pathname):
         return home.layout()       # <- chama a função layout()
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8050))  # usa a porta dinâmica do Render
-    app.run_server(host="0.0.0.0", port=port, debug=True)
+    port = int(os.environ.get("PORT", 10000))  # Render usa 10000 por padrão
+    app.run_server(host="0.0.0.0", port=port)
