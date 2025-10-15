@@ -1,7 +1,15 @@
 # Painel de Previsão de Vendas
 
+![Preview do Painel](assets/preview.png)
+
+[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://www.python.org/)
+[![Dash](https://img.shields.io/badge/Dash-Framework-brightgreen?logo=plotly)](https://dash.plotly.com/)
+[![Status](https://img.shields.io/badge/Status-Concluído-success)]()
+[![License](https://img.shields.io/badge/License-MIT-lightgrey)]()
+
 Um projeto interativo desenvolvido com **Dash (Python)** para prever vendas e comparar os resultados com metas definidas.  
 Combina **Machine Learning, Visualização de Dados e Design com Bootstrap**, sendo ideal para demonstrar competências técnicas e visuais.
+
 
 ---
 
@@ -121,3 +129,4 @@ O painel estará disponível em:
 **Autor:** Ananias Araujo — Projeto desenvolvido para portfólio público.
 
   
+
