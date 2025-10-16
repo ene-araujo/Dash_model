@@ -5,6 +5,7 @@ import plotly.express as px
 import numpy as np
 import dash_bootstrap_components as dbc
 from app import app
+from pages.create_navbar import create_navbar  # nova importação da navbar
 
 # -----------------------------
 # Carregar dados
@@ -69,6 +70,10 @@ def formatar_percentual(valor):
 # -----------------------------
 def layout():
     return html.Div([
+        # Barra de navegação no topo
+        create_navbar(active_path="/"),
+
+        # Conteúdo original da página permanece igual
         html.H3("Painel Executivo de Vendas", className="text-center mt-4 mb-4 titulo-principal"),
 
         dbc.Row([
@@ -274,3 +279,4 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
     ], className="tabela-customizada")
 
     return kpi_vendas, kpi_lucro, kpi_margem, fig_bar, fig_map, tabela
+
