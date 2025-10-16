@@ -1,6 +1,8 @@
 from dash import html
 import dash_bootstrap_components as dbc
+from . import home, previsao, analise  # importa os módulos das páginas
 
+# Função compartilhada para criar a Navbar
 def create_navbar():
     navbar = dbc.NavbarSimple(
         brand="Painel de Vendas",
@@ -13,3 +15,4 @@ def create_navbar():
         ],
     )
     return navbar
+
