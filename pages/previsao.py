@@ -5,9 +5,10 @@ import numpy as np
 import plotly.express as px
 import dash_bootstrap_components as dbc
 from app import app
+from pages.create_navbar import create_navbar  # ✅ Import da navbar
 
 # -----------------------------
-# 1️⃣ Carregar dados
+# Carregar dados
 # -----------------------------
 df_vendas = pd.read_csv("data/vendas.csv")
 df_meta = pd.read_csv("data/meta_regional.csv")
@@ -18,7 +19,7 @@ df_vendas["canal_vendas"] = df_vendas["canal_vendas"].str.title()
 df_meta["regiao"] = df_meta["regiao"].str.title()
 
 # -----------------------------
-# 2️⃣ Paletas de cores
+# Paletas de cores
 # -----------------------------
 color_map_regiao = {
     "Norte": "#9467bd",
@@ -38,7 +39,7 @@ color_map_canal = {
 }
 
 # -----------------------------
-# 3️⃣ Funções para formatar valores
+# Funções para formatar valores
 # -----------------------------
 def formatar_milhoes_br(valor):
     """Formata valor monetário em R$ com separador brasileiro"""
@@ -50,11 +51,15 @@ def formatar_milhoes_abreviado(valor):
     return f"R$ {valor_milhoes:,.1f}M".replace(",", "X").replace(".", ",").replace("X", ".")
 
 # -----------------------------
-# 4️⃣ Layout da página
+# Layout da página
 # -----------------------------
 def layout():
     return html.Div([
+        # Barra de navegação
+        create_navbar(active_path="/previsao"),
+
         html.H3("Projeção de Vendas", className="text-center mt-4 mb-4"),
+
         dbc.Row([
             # Filtros laterais
             dbc.Col(
@@ -127,7 +132,7 @@ def layout():
     ], className="container-fluid p-3")
 
 # -----------------------------
-# 5️⃣ Callback para KPIs e gráficos
+# Callback para KPIs e gráficos
 # -----------------------------
 @app.callback(
     Output("kpi-pct-atingido", "children"),
@@ -279,3 +284,4 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
     )
 
     return kpi_atingido_fmt, falta_meta_fmt, fig_linha_global, fig_regional_meta, fig_top_categorias
+
