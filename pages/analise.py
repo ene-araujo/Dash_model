@@ -1,10 +1,11 @@
-# analise.py
+# pages/analise.py
 from dash import html, dcc, Input, Output
 import pandas as pd
 import plotly.express as px
 import dash_bootstrap_components as dbc
 from app import app
 import numpy as np
+from pages.create_navbar import create_navbar  # import da navbar
 
 # -----------------------------
 # Carregar dados
@@ -42,6 +43,9 @@ color_map_canal = {
 # -----------------------------
 def layout():
     return html.Div([
+        # Barra de navegação (ativa para /analise)
+        create_navbar(active_path="/analise"),
+
         html.H3("Análise de Portfólio e Desempenho", className="text-center mt-4 mb-4"),
 
         dbc.Row([
@@ -55,24 +59,24 @@ def layout():
                         html.H6("Região"),
                         dcc.Checklist(
                             id="filtro-regiao-analise",
-                            options=[{"label": r, "value": r} for r in df["regiao"].unique()],
-                            value=df["regiao"].unique().tolist(),
+                            options=[{"label": r, "value": r} for r in sorted(df["regiao"].unique())],
+                            value=sorted(df["regiao"].unique()),
                             labelStyle={"display": "block", "margin-bottom": "5px"},
                             inputStyle={"margin-right": "10px"}
                         ),
                         html.H6("Canal"),
                         dcc.Checklist(
                             id="filtro-canal-analise",
-                            options=[{"label": c, "value": c} for c in df["canal_vendas"].unique()],
-                            value=df["canal_vendas"].unique().tolist(),
+                            options=[{"label": c, "value": c} for c in sorted(df["canal_vendas"].unique())],
+                            value=sorted(df["canal_vendas"].unique()),
                             labelStyle={"display": "block", "margin-bottom": "5px"},
                             inputStyle={"margin-right": "10px"}
                         ),
                         html.H6("Produto"),
                         dcc.Checklist(
                             id="filtro-produto-analise",
-                            options=[{"label": p, "value": p} for p in df["produto"].unique()],
-                            value=df["produto"].unique().tolist(),
+                            options=[{"label": p, "value": p} for p in sorted(df["produto"].unique())],
+                            value=sorted(df["produto"].unique()),
                             labelStyle={"display": "block", "margin-bottom": "5px"},
                             inputStyle={"margin-right": "10px"}
                         )
@@ -85,26 +89,57 @@ def layout():
             # Coluna direita: gráficos e insights
             # -----------------------------
             dbc.Col([
-                # Cards de Insights
+                # KPIs / Insights
                 dbc.Row([
-                    dbc.Col(dbc.Card(dbc.CardBody([html.H6("Alta venda / Baixa margem"), html.Div(id="insight-1")]), color="info", inverse=True), xs=12, sm=12, md=4),
-                    dbc.Col(dbc.Card(dbc.CardBody([html.H6("Baixa venda / Alta margem"), html.Div(id="insight-2")]), color="warning", inverse=True), xs=12, sm=12, md=4),
-                    dbc.Col(dbc.Card(dbc.CardBody([html.H6("Top 3 Produtos por Lucro"), html.Div(id="insight-3")]), color="success", inverse=True), xs=12, sm=12, md=4)
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody([
+                                html.H6("Alta venda / Baixa margem"),
+                                html.Div(id="insight-1", className="fw-bold text-center mt-2")
+                            ]),
+                            color="info", inverse=True, className="shadow-sm"
+                        ), xs=12, sm=12, md=4
+                    ),
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody([
+                                html.H6("Baixa venda / Alta margem"),
+                                html.Div(id="insight-2", className="fw-bold text-center mt-2")
+                            ]),
+                            color="warning", inverse=True, className="shadow-sm"
+                        ), xs=12, sm=12, md=4
+                    ),
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody([
+                                html.H6("Top 3 Produtos por Lucro"),
+                                html.Div(id="insight-3", className="fw-bold text-center mt-2")
+                            ]),
+                            color="success", inverse=True, className="shadow-sm"
+                        ), xs=12, sm=12, md=4
+                    )
                 ], className="g-3 mb-4"),
 
-                # Tabs com gráficos
+                # Tabs com gráficos principais
                 dbc.Tabs([
-                    dbc.Tab(label="Lucro por Produto/Canal/Região", tab_id="aba-barra", children=[
-                        dcc.Graph(id="grafico-barra-analise", className="m-2")
-                    ]),
-                    dbc.Tab(label="Margem x Vendas por Produto", tab_id="aba-scatter", children=[
-                        dcc.Graph(id="grafico-scatter-analise", className="m-2")
-                    ])
-                ], id="tabs-analise", active_tab="aba-barra")
+                    dbc.Tab(
+                        label="Lucro por Produto / Canal / Região",
+                        tab_id="aba-barra",
+                        children=[
+                            dcc.Graph(id="grafico-barra-analise", className="m-2")
+                        ]
+                    ),
+                    dbc.Tab(
+                        label="Margem x Vendas por Produto",
+                        tab_id="aba-scatter",
+                        children=[
+                            dcc.Graph(id="grafico-scatter-analise", className="m-2")
+                        ]
+                    )
+                ], id="tabs-analise", active_tab="aba-barra", className="mt-2")
             ], xs=12, sm=12, md=9)
         ], className="g-4")
     ], className="container-fluid p-3")
-
 
 # -----------------------------
 # Callback para atualização
@@ -224,3 +259,4 @@ def atualizar_analise(regioes_selecionadas, canais_selecionados, produtos_seleci
     insight3 = ", ".join(produtos_top) if produtos_top else "Nenhum"
 
     return fig_bar, fig_scatter, insight1, insight2, insight3
+
