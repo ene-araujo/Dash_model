@@ -1,20 +1,5 @@
-# pages/index.py
 from dash import html
-import dash_bootstrap_components as dbc
-
-# Navbar compartilhada
-def create_navbar():
-    navbar = dbc.NavbarSimple(
-        brand="Painel de Vendas",
-        color="primary",
-        dark=True,
-        children=[
-            dbc.NavItem(dbc.NavLink("Home", href="/")),
-            dbc.NavItem(dbc.NavLink("Previsão", href="/previsao")),
-            dbc.NavItem(dbc.NavLink("Análise", href="/analise")),
-        ],
-    )
-    return navbar
+from . import create_navbar  # importa a função do __init__.py
 
 # Layout da página inicial
 def layout():
