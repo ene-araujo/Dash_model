@@ -1,37 +1,30 @@
 # main.py
 import os
 from dash import html, dcc, Input, Output
-from app import app, server  # server é importante para Render
+from app import app  # app já com Bootstrap e server definido
 from pages import home, previsao, analise, create_navbar
 
 # Layout principal
 app.layout = html.Div([
-    dcc.Location(id="url", refresh=False),  # controla a página
-    html.Div(id="navbar-container"),       # navbar será renderizada dinamicamente
-    html.Div(id="page-content")            # conteúdo das páginas
+    create_navbar(),        # Barra de navegação global
+    dcc.Location(id="url"), # Controla as páginas
+    html.Div(id="page-content")
 ])
 
-# Callback para atualizar navbar e página
+# Callback de navegação
 @app.callback(
-    Output("navbar-container", "children"),
     Output("page-content", "children"),
     Input("url", "pathname")
 )
 def display_page(pathname):
-    # Atualiza navbar com a aba ativa
-    navbar = create_navbar(active_path=pathname)
-
-    # Seleciona o layout da página
     if pathname == "/previsao":
-        page = previsao.layout()
+        return previsao.layout()   # chama a função layout()
     elif pathname == "/analise":
-        page = analise.layout()
+        return analise.layout()    # chama a função layout()
     else:
-        page = home.layout()
+        return home.layout()       # página inicial
 
-    return navbar, page
-
-# Apenas para testes locais
+# Apenas para testes locais e Render
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8050))
+    port = int(os.environ.get("PORT", 8050))  # usa a porta dinâmica do Render
     app.run_server(host="0.0.0.0", port=port, debug=True)
