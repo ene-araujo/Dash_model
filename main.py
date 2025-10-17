@@ -22,9 +22,10 @@ def display_page(pathname):
     elif pathname == "/analise":
         return analise.layout()    # chama a função layout()
     else:
-        return home.layout()       # página inicial
+        return home.layout()       # página inicial (fallback)
 
-# Apenas para testes locais e Render
+# Apenas para testes locais e deploy no Render
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8050))  # usa a porta dinâmica do Render
-    app.run_server(host="0.0.0.0", port=port, debug=True)
+    port = int(os.environ.get("PORT", 8050))       # porta dinâmica do Render
+    debug = os.environ.get("DEBUG", "True").lower() in ["true", "1"]  # debug opcional
+    app.run_server(host="0.0.0.0", port=port, debug=debug)
