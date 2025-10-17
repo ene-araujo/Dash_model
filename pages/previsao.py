@@ -8,8 +8,8 @@ from app import app
 # -----------------------------
 # Carregar dados
 # -----------------------------
-df_vendas = pd.read_csv("../data/vendas.csv")
-df_meta = pd.read_csv("../data/meta_regional.csv")
+df_vendas = pd.read_csv("data/vendas.csv")
+df_meta = pd.read_csv("data/meta_regional.csv")
 
 # Normalizar nomes
 df_vendas["regiao"] = df_vendas["regiao"].str.title()
@@ -252,3 +252,4 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
     )
 
     return kpi_atingido_fmt, falta_meta_fmt, fig_linha_global, fig_regional_meta, fig_top_categorias
+
