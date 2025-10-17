@@ -8,7 +8,7 @@ import numpy as np
 # -----------------------------
 # Carregar dados
 # -----------------------------
-df = pd.read_csv("../data/vendas.csv")
+df = pd.read_csv("data/vendas.csv")
 
 # -----------------------------
 # Funções de formatação
@@ -206,3 +206,4 @@ def atualizar_analise(regioes_selecionadas, canais_selecionados, produtos_seleci
     insight3 = ", ".join(produtos_top) if produtos_top else "Nenhum"
 
     return fig_bar, fig_scatter, insight1, insight2, insight3
+
