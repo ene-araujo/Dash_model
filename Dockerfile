@@ -1,17 +1,19 @@
-# Dockerfile
+# ===== Dockerfile =====
 FROM python:3.11.9-slim
 
-# Variáveis de ambiente
-ENV PORT 10000
+# Configura ambiente
+ENV PORT=10000
 WORKDIR /app
 
-# Copia e instala o requirements.txt primeiro para otimizar cache
+# Instala dependências
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia todo o código do projeto
+# Copia todo o projeto
 COPY . .
 
-# Comando de inicialização do servidor Gunicorn
-# Usa 'app:server' porque o objeto 'server' está definido no app.py
-CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 app:server
+# Expõe a porta
+EXPOSE 10000
+
+# Executa o app com Gunicorn (modo produção)
+CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 main:app.server
