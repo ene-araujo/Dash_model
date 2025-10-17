@@ -5,10 +5,9 @@ import plotly.express as px
 import numpy as np
 import dash_bootstrap_components as dbc
 from app import app
-from pages.create_navbar import create_navbar  # Navbar compartilhada
 
 # -----------------------------
-# Carregar dados e pré-processar
+# Carregar dados
 # -----------------------------
 df = pd.read_csv("data/vendas.csv")
 
@@ -42,7 +41,7 @@ def gerar_pontos_aleatorios(regiao, n):
     return [(lat_base + np.random.uniform(-2, 2), lon_base + np.random.uniform(-2, 2)) for _ in range(n)]
 
 # -----------------------------
-# Adiciona lat/lon aos dados (pré-processamento)
+# Adiciona lat/lon de forma segura (sem warnings)
 # -----------------------------
 lats, lons = [], []
 for _, row in df.iterrows():
@@ -66,20 +65,12 @@ def formatar_percentual(valor):
     return f"{valor:.1f}%"
 
 # -----------------------------
-# Pré-processamento de agregações fixas
-# -----------------------------
-df_total_vendas_regiao = df.groupby("regiao", as_index=False)["vendas"].sum()
-max_vendas = df_total_vendas_regiao["vendas"].max()
-df_total_lucro = df.groupby("regiao", as_index=False)["lucro"].sum()
-max_lucro = df_total_lucro["lucro"].max()
-
-# -----------------------------
 # Layout da página
 # -----------------------------
 def layout():
     return html.Div([
-        create_navbar(active_path="/"),  # Navbar no topo
 
+        # Conteúdo original da página permanece igual
         html.H3("Painel Executivo de Vendas", className="text-center mt-4 mb-4 titulo-principal"),
 
         dbc.Row([
@@ -148,7 +139,7 @@ def layout():
     ], className="container-fluid p-3")
 
 # -----------------------------
-# Callback principal
+# Callback para atualização
 # -----------------------------
 @app.callback(
     Output("kpi-vendas", "children"),
@@ -161,12 +152,8 @@ def layout():
     Input("filtro-canal", "value")
 )
 def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
-    # -----------------------------
-    # Filtrar dados (somente seleção do usuário)
-    # -----------------------------
     df_filtrado = df.loc[
-        df["regiao"].isin(regioes_selecionadas) &
-        df["canal_vendas"].isin(canais_selecionados)
+        df["regiao"].isin(regioes_selecionadas) & df["canal_vendas"].isin(canais_selecionados)
     ].copy()
 
     # -----------------------------
@@ -217,7 +204,12 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
         color="canal_vendas",
         size="vendas",
         hover_name="canal_vendas",
-        hover_data={"vendas_fmt": True, "lucro_fmt": True, "lat": False, "lon": False},
+        hover_data={
+            "vendas_fmt": True,
+            "lucro_fmt": True,
+            "lat": False,
+            "lon": False
+        },
         color_discrete_map=color_map_canal,
         scope="south america",
         title="Distribuição de Vendas por Canal (Mapa do Brasil)"
@@ -233,12 +225,19 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
     )
 
     # -----------------------------
-    # Tabela de dados
+    # Planilha de dados
     # -----------------------------
     df_resumo = df_filtrado.groupby(["regiao", "canal_vendas"], as_index=False).agg(
         vendas=("vendas", "sum"),
         lucro=("lucro", "sum")
-    ).assign(pct_meta=lambda x: x["lucro"] / (x["vendas"] * 1.10))
+    )
+
+    df_resumo = df_resumo.assign(
+        pct_meta=df_resumo["lucro"] / (df_resumo["vendas"] * 1.10)
+    )
+
+    max_vendas = df_resumo["vendas"].max()
+    max_lucro = df_resumo["lucro"].max()
 
     def criar_barra(valor, max_valor, cor="#1f77b4", formato="valor"):
         pct = int((valor / max_valor) * 100) if max_valor != 0 else 0
@@ -255,7 +254,13 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
         ])
 
     tabela = html.Table([
-        html.Thead(html.Tr([html.Th("Região"), html.Th("Canal"), html.Th("Vendas"), html.Th("Lucro"), html.Th("% Meta")])),
+        html.Thead(html.Tr([
+            html.Th("Região"),
+            html.Th("Canal"),
+            html.Th("Vendas"),
+            html.Th("Lucro"),
+            html.Th("% Meta")
+        ])),
         html.Tbody([
             html.Tr([
                 html.Td(row["regiao"]),
