@@ -1,35 +1,18 @@
-# ===============================
-# Imagem base
-# ===============================
+# Usa Python 3.11.9 slim como base (compatível com seu projeto)
 FROM python:3.11.9-slim
 
-# ===============================
-# Variáveis de ambiente
-# ===============================
-ENV PORT=10000 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    DASH_DEBUG_MODE=False
-
+# Define o diretório de trabalho dentro do container
 WORKDIR /app
 
-# ===============================
-# Instala dependências
-# ===============================
+# Copia apenas o requirements.txt para otimizar cache do Docker
 COPY requirements.txt .
 
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install gunicorn
+# Instala as dependências sem cache
+RUN pip install --no-cache-dir -r requirements.txt
 
-# ===============================
-# Copia o código
-# ===============================
+# Copia todo o código do projeto para o container
 COPY . .
 
-# ===============================
-# Comando de execução
-# ===============================
-# Usa main.py (que define layout e importa server)
-CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120 main:server
-
+# Comando de inicialização usando Gunicorn
+# Importante: 'main:server' -> 'server' é o objeto Flask exposto no app.py
+CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 main:server
