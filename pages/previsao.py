@@ -1,15 +1,20 @@
+# pages/previsao.py
 from dash import html, dcc, Input, Output
 import pandas as pd
 import numpy as np
 import plotly.express as px
 import dash_bootstrap_components as dbc
 from app import app
+import os
 
 # -----------------------------
-# Carregar dados
+# Caminhos robustos para Render
 # -----------------------------
-df_vendas = pd.read_csv("data/vendas.csv")
-df_meta = pd.read_csv("data/meta_regional.csv")
+DATA_VENDAS = os.path.join(os.path.dirname(__file__), "..", "data", "vendas.csv")
+DATA_META = os.path.join(os.path.dirname(__file__), "..", "data", "meta_regional.csv")
+
+df_vendas = pd.read_csv(DATA_VENDAS)
+df_meta = pd.read_csv(DATA_META)
 
 # Normalizar nomes
 df_vendas["regiao"] = df_vendas["regiao"].str.title()
