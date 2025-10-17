@@ -1,0 +1,165 @@
+/* ==========================
+   Container principal dos filtros
+   ========================== */
+.filtro-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 20px;
+    justify-content: flex-start;
+}
+
+/* Card de cada filtro */
+.filtro-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    flex: 1 1 250px;
+    min-width: 250px;
+    transition: all 0.3s ease;
+}
+
+.filtro-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* Título dos filtros */
+.filtro-titulo {
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+/* Container interno da coluna de filtros */
+.coluna-filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+}
+
+/* Container principal das colunas da página */
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 0 20px;
+}
+
+/* Colunas internas: gráficos, mapa, tabela */
+.coluna-grafico,
+.coluna-mapa,
+.coluna-tabela {
+    flex: 1 1 350px;
+    padding: 10px;
+}
+
+/* Estilo hover e seleção dos checklists */
+.dash-checklist label {
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.dash-checklist input:checked + label {
+    background-color: #e0f0ff;
+    color: #1f77b4;
+    font-weight: bold;
+}
+
+/* Estilo dos tooltips dos gráficos */
+.hoverlabel {
+    background-color: rgba(44,62,80,0.95) !important;
+    color: #ecf0f1 !important;
+    font-size: 13px !important;
+    font-weight: 500;
+}
+
+/* ==========================
+   Tabela customizada
+   ========================== */
+.tabela-customizada {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tabela-customizada thead th {
+    background-color: #f4f6f8;
+    font-weight: 700;
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 2px solid #dfe3e6;
+    color: #34495e;
+}
+
+.tabela-customizada tbody td {
+    padding: 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #ecf0f1;
+    background-color: #ffffff;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.tabela-customizada tbody tr:hover td {
+    background-color: #f0f4f8;
+}
+
+/* ==========================
+   Mini-barras dentro da tabela
+   ========================== */
+.barra-texto {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+    color: #2c3e50;
+}
+
+.tabela-customizada div[style*="backgroundColor"] {
+    transition: width 0.5s ease;
+    border-radius: 6px;
+}
+
+/* Gradiente premium nas barras */
+.tabela-customizada div[style*="backgroundColor"]:not(.percentual) {
+    background: linear-gradient(90deg, #1f77b4, #6baed6);
+}
+
+.tabela-customizada div[style*="backgroundColor"].percentual {
+    background: linear-gradient(90deg, #4caf50, #81c784);
+}
+
+/* ==========================
+   Estilo valores monetários e percentuais
+   ========================== */
+.tabela-customizada td span {
+    display: inline-block;
+    min-width: 100px;
+    text-align: right;
+}
+
+.tabela-customizada td span.percentual {
+    font-weight: 700;
+    color: #2e7d32;
+}
+
+/* ==========================
+   Responsividade
+   ========================== */
+@media (max-width: 1024px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    .coluna-grafico,
+    .coluna-mapa,
+    .coluna-tabela {
+        flex: 1 1 100%;
+    }
+}
