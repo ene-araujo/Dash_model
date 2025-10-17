@@ -1,21 +1,16 @@
-# home.py
 from dash import html, dcc, Input, Output
 import pandas as pd
 import plotly.express as px
 import numpy as np
 import dash_bootstrap_components as dbc
 from app import app
-import os
 
 # -----------------------------
-# Carregar dados de forma robusta (compatível com Render)
+# Carregar dados
 # -----------------------------
-DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "vendas.csv")
-df = pd.read_csv(DATA_PATH)
+df = pd.read_csv("../data/vendas.csv")  # caminho ajustado para Render
 
-# -----------------------------
 # Paletas de cores
-# -----------------------------
 color_map_regiao = {
     "Norte": "#9467bd",
     "Nordeste": "#8c564b",
@@ -30,9 +25,7 @@ color_map_canal = {
     "Key Account": "#2ca02c"
 }
 
-# -----------------------------
 # Coordenadas fictícias das capitais (para lojas próprias)
-# -----------------------------
 capitais = {
     "Norte": [(-3.1, -60.0)],
     "Nordeste": [(-8.0, -35.0)],
@@ -75,7 +68,6 @@ def formatar_percentual(valor):
 # -----------------------------
 def layout():
     return html.Div([
-
         html.H3("Painel Executivo de Vendas", className="text-center mt-4 mb-4 titulo-principal"),
 
         dbc.Row([
@@ -107,7 +99,6 @@ def layout():
 
             # Coluna direita: KPIs e abas
             dbc.Col([
-                # KPIs
                 dbc.Row([
                     dbc.Col(dbc.Card(dbc.CardBody([
                         html.H6("Vendas Totais"),
@@ -123,7 +114,6 @@ def layout():
                     ]), color="warning", inverse=True), xs=12, sm=12, md=4),
                 ], className="g-3 mb-4"),
 
-                # Abas
                 dbc.Tabs([
                     dbc.Tab(label="Vendas Totais por Região", tab_id="aba-barras", children=[
                         dcc.Graph(id="grafico-barras", className="m-2")
@@ -224,7 +214,6 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
         vendas=("vendas", "sum"),
         lucro=("lucro", "sum")
     )
-
     df_resumo = df_resumo.assign(
         pct_meta=df_resumo["lucro"] / (df_resumo["vendas"] * 1.10)
     )
