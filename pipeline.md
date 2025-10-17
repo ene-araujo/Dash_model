@@ -21,15 +21,18 @@ Dash_model/
 ├── main.py                # Inicializa o app e a navbar
 ├── app.py                 # Configuração do Dash e tema
 ├── data/
-│   └── vendas.csv          # Dados simulados de vendas
+│   ├── vendas.csv          # Dados simulados de vendas
+│   └── meta_regional.csv   # Metas regionais
+├── modelos/
+│   └── modelo_vendas.pkl  # Modelo de ML treinado
 ├── pages/
 │   ├── __init__.py
 │   ├── home.py             # Painel Executivo
 │   ├── previsao.py         # Previsão de Vendas
 │   └── analise.py          # Análise de Portfólio e Insights
 └── assets/
-    └── main.css           # Estilo customizado
-```
+    └── main.css           # Estilo customizado (Bootstrap Flatly)
+````
 
 ---
 
@@ -69,19 +72,24 @@ http://127.0.0.1:8050/
 
 * KPIs de vendas, lucro e margem.
 * Gráficos por região e canal.
-* Planilha de dados interativa.
+* Planilha de dados interativa com barras de progresso e percentuais.
 
 ### **Previsão**
 
-* Inputs de parâmetros de vendas.
-* Previsão usando modelo ML.
-* Comparativo Previsão vs Meta com gráficos dinâmicos.
+* Filtros de região e canal.
+* Previsão usando modelo ML serializado (`.pkl`).
+* Comparativo Previsão vs Meta com gráficos de linha e barras.
+* KPIs de percentual atingido e valor restante para meta.
 
 ### **Análise**
 
 * Performance de produtos por canal e região.
 * Scatter plot de Margem x Vendas.
-* Cards de insight: produtos estratégicos, alta venda/baixa margem, baixa venda/alta margem.
+* Cards de insight:
+
+  * Produtos com alta venda e baixa margem
+  * Produtos com baixa venda e alta margem
+  * Top 3 produtos por lucro
 
 ---
 
@@ -92,36 +100,37 @@ http://127.0.0.1:8050/
 * Pandas / NumPy
 * Scikit-learn
 * Bootstrap (tema FLATLY)
+* Joblib (serialização de modelo)
 
 ---
 
 ## **Boas Práticas Aplicadas**
 
 * Evitar `SettingWithCopyWarning` usando `.copy()` ou `.loc[]`.
-* Funções de formatação monetária e percentual.
+* Funções de formatação monetária e percentual padronizadas.
 * Layout responsivo com `dbc.Row` e `dbc.Col`.
-* Tooltips padronizados em todos os gráficos.
+* Tooltips interativos em todos os gráficos.
 * Cards de KPI e insight para destaque visual.
+* Estrutura de pastas limpa e modular (separação de pages, data e modelos).
 
 ---
 
 ## **Possíveis Expansões**
 
 * Upload de CSV com dados reais.
-* Histórico de previsões.
+* Histórico de previsões com armazenamento local.
 * Dashboards multi-ano ou multi-produto.
-* Treemap ou heatmap para análise de portfólio.
+* Visualizações adicionais: treemap ou heatmap para análise de portfólio.
 
 ---
 
 ## **Imagem do Painel**
 
-*(Inserir aqui um screenshot do dashboard final)*
+![Painel de Previsão de Vendas](assets/preview.png)
 
-[Painel de Previsão de Vendas](assets/preview.png)
 ---
 
 ## **Autor**
 
-Ananias Araujo — Outubro de 2025
-Projeto para portfólio técnico público.
+**Ananias Araujo — Outubro de 2025**
+Projeto desenvolvido para portfólio técnico público.
