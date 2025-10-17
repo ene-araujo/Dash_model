@@ -5,10 +5,10 @@ import plotly.express as px
 import numpy as np
 import dash_bootstrap_components as dbc
 from app import app
-from pages.create_navbar import create_navbar  # nova importação da navbar
+from pages.create_navbar import create_navbar  # Navbar compartilhada
 
 # -----------------------------
-# Carregar dados
+# Carregar dados e pré-processar
 # -----------------------------
 df = pd.read_csv("data/vendas.csv")
 
@@ -42,7 +42,7 @@ def gerar_pontos_aleatorios(regiao, n):
     return [(lat_base + np.random.uniform(-2, 2), lon_base + np.random.uniform(-2, 2)) for _ in range(n)]
 
 # -----------------------------
-# Adiciona lat/lon de forma segura (sem warnings)
+# Adiciona lat/lon aos dados (pré-processamento)
 # -----------------------------
 lats, lons = [], []
 for _, row in df.iterrows():
@@ -66,14 +66,20 @@ def formatar_percentual(valor):
     return f"{valor:.1f}%"
 
 # -----------------------------
+# Pré-processamento de agregações fixas
+# -----------------------------
+df_total_vendas_regiao = df.groupby("regiao", as_index=False)["vendas"].sum()
+max_vendas = df_total_vendas_regiao["vendas"].max()
+df_total_lucro = df.groupby("regiao", as_index=False)["lucro"].sum()
+max_lucro = df_total_lucro["lucro"].max()
+
+# -----------------------------
 # Layout da página
 # -----------------------------
 def layout():
     return html.Div([
-        # Barra de navegação no topo
-        create_navbar(active_path="/"),
+        create_navbar(active_path="/"),  # Navbar no topo
 
-        # Conteúdo original da página permanece igual
         html.H3("Painel Executivo de Vendas", className="text-center mt-4 mb-4 titulo-principal"),
 
         dbc.Row([
@@ -142,7 +148,7 @@ def layout():
     ], className="container-fluid p-3")
 
 # -----------------------------
-# Callback para atualização
+# Callback principal
 # -----------------------------
 @app.callback(
     Output("kpi-vendas", "children"),
@@ -155,9 +161,12 @@ def layout():
     Input("filtro-canal", "value")
 )
 def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
-    # Cria cópia explícita do slice filtrado para evitar warnings
+    # -----------------------------
+    # Filtrar dados (somente seleção do usuário)
+    # -----------------------------
     df_filtrado = df.loc[
-        df["regiao"].isin(regioes_selecionadas) & df["canal_vendas"].isin(canais_selecionados)
+        df["regiao"].isin(regioes_selecionadas) &
+        df["canal_vendas"].isin(canais_selecionados)
     ].copy()
 
     # -----------------------------
@@ -196,7 +205,6 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
     # -----------------------------
     # Mapa interativo
     # -----------------------------
-    # Criar colunas de forma segura usando assign()
     df_filtrado = df_filtrado.assign(
         vendas_fmt=df_filtrado["vendas"].apply(formatar_brl),
         lucro_fmt=df_filtrado["lucro"].apply(formatar_brl)
@@ -209,12 +217,7 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
         color="canal_vendas",
         size="vendas",
         hover_name="canal_vendas",
-        hover_data={
-            "vendas_fmt": True,
-            "lucro_fmt": True,
-            "lat": False,
-            "lon": False
-        },
+        hover_data={"vendas_fmt": True, "lucro_fmt": True, "lat": False, "lon": False},
         color_discrete_map=color_map_canal,
         scope="south america",
         title="Distribuição de Vendas por Canal (Mapa do Brasil)"
@@ -230,20 +233,12 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
     )
 
     # -----------------------------
-    # Planilha de dados
+    # Tabela de dados
     # -----------------------------
     df_resumo = df_filtrado.groupby(["regiao", "canal_vendas"], as_index=False).agg(
         vendas=("vendas", "sum"),
         lucro=("lucro", "sum")
-    )
-
-    # Criar coluna pct_meta usando assign()
-    df_resumo = df_resumo.assign(
-        pct_meta=df_resumo["lucro"] / (df_resumo["vendas"] * 1.10)
-    )
-
-    max_vendas = df_resumo["vendas"].max()
-    max_lucro = df_resumo["lucro"].max()
+    ).assign(pct_meta=lambda x: x["lucro"] / (x["vendas"] * 1.10))
 
     def criar_barra(valor, max_valor, cor="#1f77b4", formato="valor"):
         pct = int((valor / max_valor) * 100) if max_valor != 0 else 0
@@ -260,13 +255,7 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
         ])
 
     tabela = html.Table([
-        html.Thead(html.Tr([
-            html.Th("Região"),
-            html.Th("Canal"),
-            html.Th("Vendas"),
-            html.Th("Lucro"),
-            html.Th("% Meta")
-        ])),
+        html.Thead(html.Tr([html.Th("Região"), html.Th("Canal"), html.Th("Vendas"), html.Th("Lucro"), html.Th("% Meta")])),
         html.Tbody([
             html.Tr([
                 html.Td(row["regiao"]),
@@ -279,4 +268,3 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
     ], className="tabela-customizada")
 
     return kpi_vendas, kpi_lucro, kpi_margem, fig_bar, fig_map, tabela
-
