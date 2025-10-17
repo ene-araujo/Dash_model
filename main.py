@@ -1,13 +1,13 @@
 # main.py
 import os
 from dash import dcc, html, Input, Output
-from app import app
-from pages import home, previsao, analise  # Página inicial e demais
+from app import app, server  # Importa também 'server' para o Gunicorn
+from pages import home, previsao, analise
 
 # ==============================
 # Layout principal
 # ==============================
-# Apenas Location e container; cada página chama sua própria navbar
+# Mantém apenas o container base e o controle de URL
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
     html.Div(id="page-content")
@@ -29,8 +29,15 @@ def display_page(pathname):
         return home.layout()      # Página inicial real (Home com KPIs e gráficos)
 
 # ==============================
-# Servidor
+# Execução local
 # ==============================
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # Render usa porta 10000 por padrão
-    app.run_server(host="0.0.0.0", port=port, debug=False)
+    port = int(os.environ.get("PORT", 10000))  # Render usa porta 10000
+    app.run_server(host="0.0.0.0", port=port, debug=True)
+
+# ==============================
+# Exposição para Render/Gunicorn
+# ==============================
+# Importante: garante que Gunicorn encontre o objeto 'server'
+# mesmo que o bloco "__main__" não seja executado.
+server = app.server
