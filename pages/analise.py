@@ -1,17 +1,14 @@
-# pages/analise.py
 from dash import html, dcc, Input, Output
 import pandas as pd
 import plotly.express as px
 import dash_bootstrap_components as dbc
 from app import app
 import numpy as np
-import os
 
 # -----------------------------
-# Carregar dados de forma robusta (compatível com Render)
+# Carregar dados
 # -----------------------------
-DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "vendas.csv")
-df = pd.read_csv(DATA_PATH)
+df = pd.read_csv("../data/vendas.csv")
 
 # -----------------------------
 # Funções de formatação
@@ -47,12 +44,11 @@ def layout():
         html.H3("Análise de Portfólio e Desempenho", className="text-center mt-4 mb-4"),
 
         dbc.Row([
-            # Coluna esquerda — Filtros
+            # Coluna esquerda: filtros
             dbc.Col([
                 dbc.Card(
                     dbc.CardBody([
                         html.H5("Filtros", className="card-title text-primary"),
-
                         html.H6("Região"),
                         dcc.Checklist(
                             id="filtro-regiao-analise",
@@ -61,7 +57,6 @@ def layout():
                             labelStyle={"display": "block", "margin-bottom": "5px"},
                             inputStyle={"margin-right": "10px"}
                         ),
-
                         html.H6("Canal"),
                         dcc.Checklist(
                             id="filtro-canal-analise",
@@ -70,7 +65,6 @@ def layout():
                             labelStyle={"display": "block", "margin-bottom": "5px"},
                             inputStyle={"margin-right": "10px"}
                         ),
-
                         html.H6("Produto"),
                         dcc.Checklist(
                             id="filtro-produto-analise",
@@ -84,23 +78,12 @@ def layout():
                 )
             ], xs=12, sm=12, md=3),
 
-            # Coluna direita — Gráficos e Insights
+            # Coluna direita: gráficos e insights
             dbc.Col([
                 dbc.Row([
-                    dbc.Col(dbc.Card(dbc.CardBody([
-                        html.H6("Alta venda / Baixa margem"),
-                        html.Div(id="insight-1")
-                    ]), color="info", inverse=True), xs=12, sm=12, md=4),
-
-                    dbc.Col(dbc.Card(dbc.CardBody([
-                        html.H6("Baixa venda / Alta margem"),
-                        html.Div(id="insight-2")
-                    ]), color="warning", inverse=True), xs=12, sm=12, md=4),
-
-                    dbc.Col(dbc.Card(dbc.CardBody([
-                        html.H6("Top 3 Produtos por Lucro"),
-                        html.Div(id="insight-3")
-                    ]), color="success", inverse=True), xs=12, sm=12, md=4)
+                    dbc.Col(dbc.Card(dbc.CardBody([html.H6("Alta venda / Baixa margem"), html.Div(id="insight-1")]), color="info", inverse=True), xs=12, sm=12, md=4),
+                    dbc.Col(dbc.Card(dbc.CardBody([html.H6("Baixa venda / Alta margem"), html.Div(id="insight-2")]), color="warning", inverse=True), xs=12, sm=12, md=4),
+                    dbc.Col(dbc.Card(dbc.CardBody([html.H6("Top 3 Produtos por Lucro"), html.Div(id="insight-3")]), color="success", inverse=True), xs=12, sm=12, md=4)
                 ], className="g-3 mb-4"),
 
                 dbc.Tabs([
@@ -117,7 +100,7 @@ def layout():
 
 
 # -----------------------------
-# Callback — Atualização de Gráficos e Insights
+# Callback para atualização
 # -----------------------------
 @app.callback(
     Output("grafico-barra-analise", "figure"),
@@ -130,14 +113,13 @@ def layout():
     Input("filtro-produto-analise", "value")
 )
 def atualizar_analise(regioes_selecionadas, canais_selecionados, produtos_selecionados):
-    # --- Filtrar dados
     df_filtrado = df.loc[
         df["regiao"].isin(regioes_selecionadas) &
         df["canal_vendas"].isin(canais_selecionados) &
         df["produto"].isin(produtos_selecionados)
     ].copy()
 
-    # --- Gráfico de barras
+    # Gráfico de barras (% da meta)
     df_bar = df_filtrado.groupby(["produto", "canal_vendas", "regiao"], as_index=False).agg(
         vendas=("vendas", "sum"),
         lucro=("lucro", "sum")
@@ -154,30 +136,27 @@ def atualizar_analise(regioes_selecionadas, canais_selecionados, produtos_seleci
         color_discrete_map=color_map_regiao,
         title="Performance de Lucro por Produto/Canal/Região (% da Meta)"
     )
-
     fig_bar.update_traces(
-        textposition="outside",
         hovertemplate="<b>%{x}</b><br>Canal: %{customdata[0]}<br>Região: %{customdata[1]}<br>Lucro: %{customdata[2]}<br>Vendas: %{customdata[3]}<br>% da Meta: %{y:.1f}%",
         customdata=np.stack([
             df_bar["canal_vendas"],
             df_bar["regiao"],
             df_bar["lucro"].apply(formatar_brl),
             df_bar["vendas"].apply(formatar_brl)
-        ], axis=-1)
+        ], axis=-1),
+        textposition='outside'
     )
-
     fig_bar.update_layout(
         yaxis_title="% da Meta",
         xaxis_title="Produto",
         legend_title="Região",
         uniformtext_minsize=10,
-        uniformtext_mode="hide",
+        uniformtext_mode='hide',
         hoverlabel=dict(bgcolor="rgba(50,50,50,0.9)", font_size=13, font_color="white")
     )
 
-    # --- Gráfico Scatter: Margem x Vendas
+    # Gráfico scatter: Margem x Vendas
     df_filtrado["margem"] = np.where(df_filtrado["vendas"] != 0, df_filtrado["lucro"] / df_filtrado["vendas"] * 100, 0)
-
     fig_scatter = px.scatter(
         df_filtrado,
         x="vendas",
@@ -185,10 +164,16 @@ def atualizar_analise(regioes_selecionadas, canais_selecionados, produtos_seleci
         color="regiao",
         size="vendas",
         hover_name="produto",
+        hover_data={
+            "canal_vendas": True,
+            "regiao": True,
+            "vendas": True,
+            "lucro": True,
+            "margem": True
+        },
         color_discrete_map=color_map_regiao,
         title="Margem x Vendas por Produto"
     )
-
     fig_scatter.update_traces(
         hovertemplate="<b>%{hovertext}</b><br>Canal: %{customdata[0]}<br>Região: %{customdata[1]}<br>Vendas: %{customdata[2]}<br>Lucro: %{customdata[3]}<br>Margem: %{customdata[4]:.1f}%",
         customdata=np.stack([
@@ -199,30 +184,21 @@ def atualizar_analise(regioes_selecionadas, canais_selecionados, produtos_seleci
             df_filtrado["margem"]
         ], axis=-1)
     )
-
     fig_scatter.update_layout(
         xaxis_title="Vendas (R$)",
         yaxis_title="Margem (%)",
         hoverlabel=dict(bgcolor="rgba(50,50,50,0.9)", font_size=13, font_color="white")
     )
 
-    # --- Insights
+    # Insights simples
     df_insight = df_filtrado.groupby("produto", as_index=False).agg(
         vendas=("vendas", "sum"),
         lucro=("lucro", "sum")
     )
     df_insight["margem"] = np.where(df_insight["vendas"] != 0, df_insight["lucro"]/df_insight["vendas"]*100, 0)
 
-    alta_venda_baixa_margem = df_insight[
-        (df_insight["vendas"] > df_insight["vendas"].mean()) &
-        (df_insight["margem"] < df_insight["margem"].mean())
-    ]["produto"].tolist()
-
-    baixa_venda_alta_margem = df_insight[
-        (df_insight["vendas"] < df_insight["vendas"].mean()) &
-        (df_insight["margem"] > df_insight["margem"].mean())
-    ]["produto"].tolist()
-
+    alta_venda_baixa_margem = df_insight[(df_insight["vendas"] > df_insight["vendas"].mean()) & (df_insight["margem"] < df_insight["margem"].mean())]["produto"].tolist()
+    baixa_venda_alta_margem = df_insight[(df_insight["vendas"] < df_insight["vendas"].mean()) & (df_insight["margem"] > df_insight["margem"].mean())]["produto"].tolist()
     produtos_top = df_insight.sort_values("lucro", ascending=False)["produto"].head(3).tolist()
 
     insight1 = ", ".join(alta_venda_baixa_margem) if alta_venda_baixa_margem else "Nenhum"
