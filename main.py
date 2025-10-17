@@ -1,44 +1,37 @@
 # main.py
 import os
 from dash import html, dcc, Input, Output
-from app import app, server  # IMPORTANTE: server para Gunicorn no Render
+from app import app, server  # server é importante para Render
 from pages import home, previsao, analise, create_navbar
-import pandas as pd
 
-# -----------------------------
-# Pré-carregamento de dados (apenas uma vez)
-# -----------------------------
-df_vendas_global = pd.read_csv("data/vendas.csv")
-df_meta_global = pd.read_csv("data/meta_regional.csv")
-
-# -----------------------------
 # Layout principal
-# -----------------------------
 app.layout = html.Div([
-    create_navbar(),        # Navbar única
-    dcc.Location(id="url"), # Controla as páginas
-    html.Div(id="page-content")
+    dcc.Location(id="url", refresh=False),  # controla a página
+    html.Div(id="navbar-container"),       # navbar será renderizada dinamicamente
+    html.Div(id="page-content")            # conteúdo das páginas
 ])
 
-# -----------------------------
-# Callback de navegação entre páginas
-# -----------------------------
+# Callback para atualizar navbar e página
 @app.callback(
+    Output("navbar-container", "children"),
     Output("page-content", "children"),
     Input("url", "pathname")
 )
 def display_page(pathname):
-    # Passa os dados já carregados para as páginas, evitando leituras repetidas
-    if pathname == "/previsao":
-        return previsao.layout(df_vendas=df_vendas_global, df_meta=df_meta_global)
-    elif pathname == "/analise":
-        return analise.layout(df_vendas=df_vendas_global)
-    else:
-        return home.layout(df_vendas=df_vendas_global)
+    # Atualiza navbar com a aba ativa
+    navbar = create_navbar(active_path=pathname)
 
-# -----------------------------
-# Execução do app
-# -----------------------------
+    # Seleciona o layout da página
+    if pathname == "/previsao":
+        page = previsao.layout()
+    elif pathname == "/analise":
+        page = analise.layout()
+    else:
+        page = home.layout()
+
+    return navbar, page
+
+# Apenas para testes locais
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))
-    app.run_server(host="0.0.0.0", port=port, debug=False)  # debug=False no Render
+    app.run_server(host="0.0.0.0", port=port, debug=True)
