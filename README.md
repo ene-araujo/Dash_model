@@ -7,15 +7,14 @@
 [![Status](https://img.shields.io/badge/Status-Concluído-success)]()
 [![License](https://img.shields.io/badge/License-MIT-lightgrey)]()
 
-Um projeto interativo desenvolvido com **Dash (Python)** para prever vendas e comparar os resultados com metas definidas.  
-Combina **Machine Learning, Visualização de Dados e Design com Bootstrap**, sendo ideal para demonstrar competências técnicas e visuais.
-
+Projeto interativo desenvolvido com **Dash (Python)** para **prever vendas** e comparar os resultados com metas definidas.  
+Combina **Machine Learning, Visualização de Dados e Design com Bootstrap**, ideal para demonstração de competências técnicas e visuais.
 
 ---
 
 ## Objetivo
-Demonstrar um pipeline completo de **previsão de vendas**, desde o pré-processamento e treinamento do modelo até a visualização interativa em um **painel web responsivo**.  
-O projeto foi estruturado em etapas documentadas no arquivo [`pipeline.md`](pipeline.md).
+Construir um pipeline completo de **previsão de vendas**, desde pré-processamento e treinamento de modelo até **visualização interativa** em um painel web responsivo.  
+As etapas detalhadas estão documentadas em [`pipeline.md`](pipeline.md).
 
 ---
 
@@ -26,7 +25,8 @@ Dash_model/
 ├── main.py                     # Inicializa a aplicação e a navbar
 ├── app.py                      # Configuração do Dash e tema
 ├── data/
-│   └── vendas.csv               # Dados simulados de vendas
+│   ├── vendas.csv               # Dados simulados de vendas
+│   └── meta_regional.csv        # Metas regionais
 ├── modelos/
 │   └── modelo_vendas.pkl       # Modelo de Machine Learning treinado
 ├── pages/
@@ -85,34 +85,30 @@ O painel estará disponível em:
 
 ## Funcionalidades
 
-* **Home:** KPIs de vendas, lucro e margem; gráficos por região e canal; planilha de dados interativa.
-* **Previsão:** Inputs de parâmetros de vendas; previsão usando modelo ML; comparativo Previsão vs Meta.
-* **Análise:** Performance de produtos por canal e região; scatter plot de Margem x Vendas; cards de insight com sugestões de ação.
+* **Home:** KPIs de vendas, lucro e margem; gráficos por região e canal; tabela de dados interativa.
+* **Previsão:** Filtros de região e canal; previsão usando modelo ML; comparativo Previsão vs Meta.
+* **Análise:** Performance de produtos por canal e região; scatter plot Margem x Vendas; cards de insight.
 * Tooltips padronizados com **valores monetários** e percentuais.
-* Layout totalmente **responsivo** e estilizado com tema Flatly.
-* Gráficos dinâmicos e interativos usando Plotly.
+* Layout totalmente **responsivo**, com tema Flatly.
+* Gráficos interativos e dinâmicos usando Plotly.
 
 ---
 
 ## Demonstração do Painel
 
-> *(Adicione aqui uma imagem ou GIF do painel final)*
-
-```md
 ![Painel de Previsão de Vendas](assets/preview.png)
-```
 
 ---
 
 ## Publicação e Portfólio
 
 * **GitHub:** [Repositório do Projeto](https://github.com/ene-araujo/Dash_model)
-* **LinkedIn:** Post sobre o projeto destacando aprendizado, desafios e resultados.
-  Hashtags sugeridas:
+* **LinkedIn:** Post destacando aprendizado, desafios e resultados.
+  Sugestão de hashtags:
 
-```text
-#DataScience #Python #Dash #Portfolio #MachineLearning #OpenToWork
-```
+  ```
+  #DataScience #Python #Dash #Portfolio #MachineLearning #OpenToWork
+  ```
 
 ---
 
@@ -127,6 +123,3 @@ O painel estará disponível em:
 
 **Última atualização:** Outubro de 2025
 **Autor:** Ananias Araujo — Projeto desenvolvido para portfólio público.
-
-  
-
