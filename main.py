@@ -1,17 +1,21 @@
 # main.py
 import os
 from dash import html, dcc, Input, Output
-from app import app  # app já com Bootstrap e server definido
+from app import app, server  # garante que o 'server' seja exportado
 from pages import home, previsao, analise, create_navbar
 
+# -----------------------------
 # Layout principal
+# -----------------------------
 app.layout = html.Div([
     create_navbar(),        # Barra de navegação global
     dcc.Location(id="url"), # Controla as páginas
     html.Div(id="page-content")
 ])
 
+# -----------------------------
 # Callback de navegação
+# -----------------------------
 @app.callback(
     Output("page-content", "children"),
     Input("url", "pathname")
@@ -24,8 +28,10 @@ def display_page(pathname):
     else:
         return home.layout()       # página inicial (fallback)
 
-# Apenas para testes locais e deploy no Render
+# -----------------------------
+# Execução local / Render
+# -----------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))       # porta dinâmica do Render
-    debug = os.environ.get("DEBUG", "True").lower() in ["true", "1"]  # debug opcional
+    debug = os.environ.get("DEBUG", "True").lower() in ["true", "1"]
     app.run_server(host="0.0.0.0", port=port, debug=debug)
