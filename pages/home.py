@@ -5,13 +5,17 @@ import plotly.express as px
 import numpy as np
 import dash_bootstrap_components as dbc
 from app import app
+import os
 
 # -----------------------------
-# Carregar dados
+# Carregar dados de forma robusta (compatível com Render)
 # -----------------------------
-df = pd.read_csv("data/vendas.csv")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "vendas.csv")
+df = pd.read_csv(DATA_PATH)
 
+# -----------------------------
 # Paletas de cores
+# -----------------------------
 color_map_regiao = {
     "Norte": "#9467bd",
     "Nordeste": "#8c564b",
@@ -26,7 +30,9 @@ color_map_canal = {
     "Key Account": "#2ca02c"
 }
 
+# -----------------------------
 # Coordenadas fictícias das capitais (para lojas próprias)
+# -----------------------------
 capitais = {
     "Norte": [(-3.1, -60.0)],
     "Nordeste": [(-8.0, -35.0)],
@@ -70,13 +76,10 @@ def formatar_percentual(valor):
 def layout():
     return html.Div([
 
-        # Conteúdo original da página permanece igual
         html.H3("Painel Executivo de Vendas", className="text-center mt-4 mb-4 titulo-principal"),
 
         dbc.Row([
-            # -----------------------------
             # Coluna esquerda: filtros
-            # -----------------------------
             dbc.Col([
                 dbc.Card(
                     dbc.CardBody([
@@ -102,9 +105,7 @@ def layout():
                 )
             ], xs=12, sm=12, md=3),
 
-            # -----------------------------
             # Coluna direita: KPIs e abas
-            # -----------------------------
             dbc.Col([
                 # KPIs
                 dbc.Row([
@@ -156,9 +157,7 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
         df["regiao"].isin(regioes_selecionadas) & df["canal_vendas"].isin(canais_selecionados)
     ].copy()
 
-    # -----------------------------
     # KPIs
-    # -----------------------------
     total_vendas = df_filtrado["vendas"].sum()
     total_lucro = df_filtrado["lucro"].sum()
     margem_media = (total_lucro / total_vendas * 100) if total_vendas != 0 else 0
@@ -167,9 +166,7 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
     kpi_lucro = formatar_brl(total_lucro)
     kpi_margem = formatar_percentual(margem_media)
 
-    # -----------------------------
     # Gráfico de barras
-    # -----------------------------
     df_bar = df_filtrado.groupby("regiao", as_index=False)["vendas"].sum()
     fig_bar = px.bar(
         df_bar,
@@ -189,9 +186,7 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
         paper_bgcolor="rgba(0,0,0,0)"
     )
 
-    # -----------------------------
     # Mapa interativo
-    # -----------------------------
     df_filtrado = df_filtrado.assign(
         vendas_fmt=df_filtrado["vendas"].apply(formatar_brl),
         lucro_fmt=df_filtrado["lucro"].apply(formatar_brl)
@@ -224,9 +219,7 @@ def atualizar_dashboard(regioes_selecionadas, canais_selecionados):
         paper_bgcolor="rgba(0,0,0,0)"
     )
 
-    # -----------------------------
     # Planilha de dados
-    # -----------------------------
     df_resumo = df_filtrado.groupby(["regiao", "canal_vendas"], as_index=False).agg(
         vendas=("vendas", "sum"),
         lucro=("lucro", "sum")
