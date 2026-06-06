@@ -11,6 +11,12 @@ Projeto desenvolvido com Dash (Python) para previsão de vendas e acompanhamento
 
 A solução integra Machine Learning, análise de dados e visualização interativa, permitindo explorar indicadores de desempenho, comparar previsões com metas e analisar resultados por região, canal e portfólio.
 
+## Demonstração Online
+
+A aplicação está disponível para demonstração pública:
+
+https://painel-previsao-vendas.onrender.com/
+
 ---
 
 # Visão Geral
